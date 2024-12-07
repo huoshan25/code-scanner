@@ -2,16 +2,7 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
 use anyhow::Result;
-use serde::Serialize;
-
-#[derive(Debug, Serialize)]
-pub struct Comment {
-    pub comment_type: String,
-    pub content: String,
-    pub file_path: String,
-    pub line_number: usize,
-    pub language: String,
-}
+use crate::core::types::Comment;
 
 pub struct Parser {
     patterns: Vec<(String, Vec<String>)>,
