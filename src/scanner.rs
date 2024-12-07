@@ -1,7 +1,9 @@
 use std::path::{Path, PathBuf};
 use walkdir::{DirEntry, WalkDir};
 use anyhow::Result;
+use rayon::prelude::*;
 use crate::progress::ProgressBar;
+use std::sync::Mutex;
 
 pub struct Scanner {
     ignored_dirs: Vec<String>,
@@ -40,31 +42,28 @@ impl Scanner {
     }
 
     pub fn scan_directory(&self, dir: &Path) -> Result<Vec<PathBuf>> {
-        let mut files = Vec::new();
-
-        // 首先计算文件总数
-        let total_files = WalkDir::new(dir)
+        // 首先收集所有符合条件的文件条目
+        let entries: Vec<_> = WalkDir::new(dir)
             .follow_links(true)
             .into_iter()
             .filter_entry(|e| !self.is_ignored(e))
-            .filter(|e| e.is_ok())
-            .filter(|e| e.as_ref().unwrap().file_type().is_file())
-            .filter(|e| self.is_target_file(e.as_ref().unwrap()))
-            .count();
+            .filter_map(|e| e.ok())
+            .filter(|e| e.file_type().is_file() && self.is_target_file(e))
+            .collect();
 
-        let mut progress = ProgressBar::new(total_files);
+        let total_files = entries.len();
+        let progress = Mutex::new(ProgressBar::new(total_files));
 
-        for entry in WalkDir::new(dir)
-            .follow_links(true)
-            .into_iter()
-            .filter_entry(|e| !self.is_ignored(e))
-        {
-            let entry = entry?;
-            if entry.file_type().is_file() && self.is_target_file(&entry) {
-                files.push(entry.path().to_owned());
-                progress.increment();
-            }
-        }
+        // 并行处理文件
+        let files: Vec<PathBuf> = entries.par_iter()
+            .map(|entry| {
+                let path = entry.path().to_owned();
+                if let Ok(mut progress_guard) = progress.lock() {
+                    progress_guard.increment();
+                }
+                path
+            })
+            .collect();
 
         Ok(files)
     }
