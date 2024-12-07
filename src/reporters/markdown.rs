@@ -1,4 +1,4 @@
-use crate::parser::Comment;
+use crate::core::Comment;
 use chrono::Local;
 use std::collections::HashMap;
 use std::fs;

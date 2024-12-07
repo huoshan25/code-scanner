@@ -1,4 +1,4 @@
-use crate::parser::Comment;
+use crate::core::Comment;
 use handlebars::{Handlebars, Helper, Context, RenderContext, Output, HelperResult};
 use serde_json::json;
 use std::fs;
@@ -15,7 +15,7 @@ impl HtmlReporter {
         handlebars.register_helper("json", Box::new(json_helper));
 
         // 注册模板
-        handlebars.register_template_string("report", include_str!("../templates/report.html"))?;
+        handlebars.register_template_string("report", include_str!("../../templates/report.html"))?;
 
         // 准备数据
         let data = json!({
