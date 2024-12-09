@@ -1,20 +1,28 @@
-name: Publish
+name: NPM Publish
+
 on:
   push:
     tags:
       - 'v*'
 
 jobs:
-  publish:
-    name: Publish
+  build-and-publish:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup node
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: '18.17.0'
           registry-url: 'https://registry.npmjs.org'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -22,12 +30,13 @@ jobs:
           target: x86_64-unknown-linux-gnu
           toolchain: stable
 
-      - name: Install dependencies
+      - name: Install dependencies and build
         run: |
-          npm install
-          npm install -g @napi-rs/cli
+          pnpm install
+          pnpm install -g @napi-rs/cli
+          pnpm run build
 
-      - name: Build and publish
-        run: npm publish
+      - name: Publish to npm
+        run: pnpm publish --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
