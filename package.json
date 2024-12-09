@@ -1,0 +1,40 @@
+{
+  "name": "@huo-shan/code-scanner",
+  "version": "0.1.2",
+  "description": "A code scanner CLI tool for finding TODOs, FIXMEs and other code comments",
+  "bin": {
+    "code-scanner": "./run.js"
+  },
+  "files": [
+    "run.js",
+    "bin"
+  ],
+  "scripts": {
+    "postinstall": "node ./run.js --install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "xxxurl"
+  },
+  "keywords": [
+    "code-scanner",
+    "todo",
+    "fixme",
+    "static-analysis",
+    "cli"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}

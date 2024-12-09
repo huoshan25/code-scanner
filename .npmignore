@@ -1,0 +1,8 @@
+/src
+/target
+/scripts
+Cargo.toml
+Cargo.lock
+rust-toolchain.toml
+.gitignore
+.cargo
