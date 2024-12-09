@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { scanCode } = require('../');
+const { scanCode } = require('../index');
 
 async function main() {
     try {
