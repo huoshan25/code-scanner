@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Scanner Report</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --background-color: #f8fafc;
+            --card-background: #ffffff;
+            --text-color: #1e293b;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.5;
+            margin: 0;
+            padding: 2rem;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background-color: var(--card-background);
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            margin: 0;
+            color: var(--primary-color);
+        }
+
+        .header p {
+            margin: 0.5rem 0 0;
+            color: #64748b;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background-color: var(--card-background);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card h3 {
+            margin: 0 0 0.5rem;
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .stat-card p {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background-color: var(--card-background);
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .filters select {
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.375rem;
+            background-color: var(--card-background);
+            color: var(--text-color);
+        }
+
+        .comments-container {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .file-section {
+            background-color: var(--card-background);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .file-section h3 {
+            margin: 0 0 1rem;
+            font-size: 1rem;
+            color: var(--text-color);
+        }
+
+        .comment-item {
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-left: 3px solid var(--primary-color);
+            background-color: var(--background-color);
+            border-radius: 0 0.375rem 0.375rem 0;
+        }
+
+        .comment-item:hover {
+            background-color: #f1f5f9;
+        }
+
+        .comment-type {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .comment-meta {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin: 0.5rem 0;
+        }
+
+        .comment-content {
+            margin: 0.5rem 0;
+            color: var(--text-color);
+        }
+
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background-color: var(--card-background);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Code Scanner Report</h1>
+        <p>Generated at: 2024-12-09 09:38:29</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Total Comments</h3>
+            <p>3</p>
+        </div>
+        <div class="stat-card">
+            <h3>Files Scanned</h3>
+            <p>1</p>
+        </div>
+    </div>
+
+    <div class="filters">
+        <select id="typeFilter">
+            <option value="">All Types</option>
+            <option value="TODO">TODO (2)</option>
+            <option value="FIXME">FIXME (1)</option>
+        </select>
+        <select id="languageFilter">
+            <option value="">All Languages</option>
+            <option value="Rust">Rust (3)</option>
+        </select>
+    </div>
+
+    <div class="charts-container">
+        <div class="chart-card">
+            <canvas id="typeChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <canvas id="languageChart"></canvas>
+        </div>
+    </div>
+
+    <div class="comments-container">
+        <div class="file-section" data-type="TODO" data-language="Rust">
+            <h3>./test_files\test.rs</h3>
+            <div class="comment-item">
+                <span class="comment-type">TODO</span>
+                <div class="comment-meta">
+                    Line 1 | Rust
+                </div>
+                <div class="comment-content">
+                    这是一个测试 todo
+                </div>
+            </div>
+        </div>
+        <div class="file-section" data-type="FIXME" data-language="Rust">
+            <h3>./test_files\test.rs</h3>
+            <div class="comment-item">
+                <span class="comment-type">FIXME</span>
+                <div class="comment-meta">
+                    Line 3 | Rust
+                </div>
+                <div class="comment-content">
+                    这需要修复
+                </div>
+            </div>
+        </div>
+        <div class="file-section" data-type="TODO" data-language="Rust">
+            <h3>./test_files\test.rs</h3>
+            <div class="comment-item">
+                <span class="comment-type">TODO</span>
+                <div class="comment-meta">
+                    Line 6 | Rust
+                </div>
+                <div class="comment-content">
+                    多行注释中的另一个 todo */
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // 初始化图表
+    function initCharts() {
+        const typeData = [{"count":2,"type":"TODO"},{"count":1,"type":"FIXME"}];
+        const languageData = [{"count":3,"language":"Rust"}];
+
+        new Chart(document.getElementById('typeChart'), {
+            type: 'bar',
+            data: {
+                labels: typeData.map(item => item.type),
+                datasets: [{
+                    label: 'Comments by Type',
+                    data: typeData.map(item => item.count),
+                    backgroundColor: '#2563eb80',
+                    borderColor: '#2563eb',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Comments by Type'
+                    }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('languageChart'), {
+            type: 'doughnut',
+            data: {
+                labels: languageData.map(item => item.language),
+                datasets: [{
+                    data: languageData.map(item => item.count),
+                    backgroundColor: [
+                        '#2563eb80',
+                        '#db277b80',
+                        '#eab30880',
+                        '#16a34a80'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Comments by Language'
+                    }
+                }
+            }
+        });
+    }
+
+    // 过滤功能
+    function initFilters() {
+        const typeFilter = document.getElementById('typeFilter');
+        const languageFilter = document.getElementById('languageFilter');
+
+        function updateVisibility() {
+            const selectedType = typeFilter.value;
+            const selectedLanguage = languageFilter.value;
+
+            document.querySelectorAll('.file-section').forEach(section => {
+                const matchesType = !selectedType || section.dataset.type === selectedType;
+                const matchesLanguage = !selectedLanguage || section.dataset.language === selectedLanguage;
+                section.style.display = (matchesType && matchesLanguage) ? 'block' : 'none';
+            });
+        }
+
+        typeFilter.addEventListener('change', updateVisibility);
+        languageFilter.addEventListener('change', updateVisibility);
+    }
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', () => {
+        initCharts();
+        initFilters();
+    });
+</script>
+</body>
+</html>
