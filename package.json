@@ -1,6 +1,6 @@
 {
   "name": "@huo-shan/code-scanner",
-  "version": "0.1.3",
+  "version": "0.1.31",
   "main": "index.js",
   "types": "index.d.ts",
   "napi": {
@@ -19,6 +19,12 @@
     "@napi-rs/cli": "^2.18.4",
     "ava": "^6.0.1"
   },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "bin",
+    "*.node"
+  ],
   "ava": {
     "timeout": "3m"
   },
@@ -42,8 +48,8 @@
     "access": "public"
   },
   "optionalDependencies": {
-    "@huo-shan/code-scanner-win32-x64-msvc": "0.1.0",
-    "@huo-shan/code-scanner-darwin-x64": "0.1.0",
-    "@huo-shan/code-scanner-linux-x64-gnu": "0.1.0"
+    "@huo-shan/code-scanner-win32-x64-msvc": "0.1.31",
+    "@huo-shan/code-scanner-darwin-x64": "0.1.31",
+    "@huo-shan/code-scanner-linux-x64-gnu": "0.1.31"
   }
 }

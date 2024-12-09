@@ -1,6 +1,6 @@
 {
-  "name": "code-scanner-win32-x64-msvc",
-  "version": "0.1.0",
+  "name": "@huo-shan/code-scanner-win32-x64-msvc",
+  "version": "0.1.31",
   "os": [
     "win32"
   ],
