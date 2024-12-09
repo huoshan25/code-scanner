@@ -1,45 +1,63 @@
 use anyhow::Result;
 use std::path::PathBuf;
+use std::fs;
 
 use crate::config::Config;
 use crate::core::scanner::Scanner;
 use crate::core::parser::Parser as CommentParser;
 use crate::reporters::{MarkdownReporter, HtmlReporter};
+use crate::core::Comment;
+
+const DEFAULT_CONFIG: &str = include_str!("../../templates/default-config.yaml");
 
 pub fn execute_scan(cli: &super::args::Cli) -> Result<()> {
-    let mut config = match &cli.config {
-        Some(path) => Config::from_file(path)?,
-        None => {
-            // 尝试从默认路径加载
-            let default_path = PathBuf::from("code-scan.yaml");
-            if default_path.exists() {
-                Config::from_file(default_path)?
-            } else {
-                Config::default()
-            }
+    match &cli.command {
+        super::args::Commands::Scan { directory, config, format, output } => {
+            let mut config = match config {
+                Some(path) => Config::from_file(path)?,
+                None => {
+                    // 尝试从默认路径加载
+                    let default_path = PathBuf::from("code-scan.yaml");
+                    if default_path.exists() {
+                        Config::from_file(default_path)?
+                    } else {
+                        Config::default()
+                    }
+                }
+            };
+
+            // 合并命令行参数到配置
+            config.merge_cli_args(format.clone(), output.clone());
+            config.validate()?;
+
+            // 执行扫描
+            let comments = scan_files(&config, directory)?;
+
+            // 生成报告
+            generate_report(&config, &comments)?;
+        },
+        super::args::Commands::Init => {
+            // 初始化配置文件
+            initialize_config()?;
         }
-    };
-
-    // 加载配置
-    let mut config = match &cli.config {
-        Some(path) => Config::from_file(path)?,
-        None => Config::default(),
-    };
-
-    // 合并命令行参数到配置
-    config.merge_cli_args(cli.format.clone(), cli.output.clone());
-    config.validate()?;
-
-    // 执行扫描
-    let comments = scan_files(&config, &cli.directory)?;
-
-    // 生成报告
-    generate_report(&config, &comments)?;
+    }
 
     Ok(())
 }
 
-fn scan_files(config: &Config, directory: &PathBuf) -> Result<Vec<crate::core::Comment>> {
+fn initialize_config() -> Result<()> {
+    let config_path = PathBuf::from("code-scan.yaml");
+    if config_path.exists() {
+        println!("Configuration file already exists at: {}", config_path.display());
+        return Ok(());
+    }
+
+    fs::write(&config_path, DEFAULT_CONFIG)?;
+    println!("Created default configuration file at: {}", config_path.display());
+    Ok(())
+}
+
+fn scan_files(config: &Config, directory: &PathBuf) -> Result<Vec<Comment>> {
     // 初始化扫描器
     let scanner = Scanner::new(config.ignore.clone(), config.file_types.clone());
 
@@ -69,7 +87,7 @@ fn scan_files(config: &Config, directory: &PathBuf) -> Result<Vec<crate::core::C
     Ok(all_comments)
 }
 
-fn generate_report(config: &Config, comments: &[crate::core::Comment]) -> Result<()> {
+fn generate_report(config: &Config, comments: &[Comment]) -> Result<()> {
     let output_path = PathBuf::from(&config.output.path);
     match config.output.format.as_str() {
         "md" => {

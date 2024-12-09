@@ -3,26 +3,32 @@ use std::path::PathBuf;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
-pub enum Cli {
-    #[command(name = "scan")]
+pub struct Cli {
+    #[command(subcommand)]
+    pub command: Commands,
+}
+
+#[derive(clap::Subcommand)]
+pub enum Commands {
+    /// Scan code and generate report
     Scan {
-        /// 要扫描的目录
+        /// Directory to scan
         #[arg(default_value = ".")]
         directory: PathBuf,
 
-        /// 配置文件路径
+        /// Configuration file path
         #[arg(short, long, value_name = "FILE")]
         config: Option<PathBuf>,
 
-        /// 输出文件路径
+        /// Output file path
         #[arg(short, long, value_name = "FILE")]
         output: Option<String>,
 
-        /// 输出格式(md/html)
+        /// Output format(md/html)
         #[arg(short = 'f', long, value_name = "FORMAT")]
         format: Option<String>,
     },
 
-    #[command(name = "init")]
+    /// Initialize default configuration file
     Init,
 }

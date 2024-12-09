@@ -1,0 +1,30 @@
+ignore:
+  - node_modules
+  - target
+  - dist
+
+fileTypes:
+  - ".rs"
+  - ".js"
+  - ".ts"
+  - ".py"
+
+comments:
+  - type_name: "TODO"
+    patterns:
+      - "TODO:"
+      - "TODO("
+  - type_name: "FIXME"
+    patterns:
+      - "FIXME:"
+      - "FIX:"
+  - type_name: "NOTE"
+    patterns:
+      - "NOTE:"
+  - type_name: "HACK"
+    patterns:
+      - "HACK:"
+
+output:
+  format: "html"
+  path: "./report.html"
