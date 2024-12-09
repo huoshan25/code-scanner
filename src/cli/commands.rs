@@ -7,6 +7,19 @@ use crate::core::parser::Parser as CommentParser;
 use crate::reporters::{MarkdownReporter, HtmlReporter};
 
 pub fn execute_scan(cli: &super::args::Cli) -> Result<()> {
+    let mut config = match &cli.config {
+        Some(path) => Config::from_file(path)?,
+        None => {
+            // 尝试从默认路径加载
+            let default_path = PathBuf::from("code-scan.yaml");
+            if default_path.exists() {
+                Config::from_file(default_path)?
+            } else {
+                Config::default()
+            }
+        }
+    };
+
     // 加载配置
     let mut config = match &cli.config {
         Some(path) => Config::from_file(path)?,
